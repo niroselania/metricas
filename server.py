@@ -19,7 +19,7 @@ import time
 
 from ventas_processor import build_payload
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 APP_DIR = Path(os.environ.get("APP_DIR", "/app"))
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
 HISTORY_DIR = DATA_DIR / "history"
@@ -116,16 +116,26 @@ class Handler(BaseHTTPRequestHandler):
         try:
             t0 = time.time()
             with LOCK:
-                payload = build_payload(tmp_path, filename)
+                nuevo = build_payload(tmp_path, filename)
+                # Combina: los meses de la planilla nueva reemplazan a los guardados;
+                # los meses que no vienen en esta planilla se conservan.
+                previo = read_json(DATA_FILE, {}) or {}
+                meses = dict(previo.get("meses", {}))
+                for key, mes in previo.get("meses", {}).items():
+                    mes.setdefault("archivo", previo.get("archivo", ""))
+                    mes.setdefault("actualizado", previo.get("actualizado", ""))
+                meses.update(nuevo["meses"])
+                payload = {"archivo": nuevo["archivo"], "actualizado": nuevo["actualizado"],
+                           "mesesActualizados": sorted(nuevo["meses"]), "meses": dict(sorted(meses.items()))}
                 write_json_atomic(DATA_FILE, payload)
                 hid = time.strftime("%Y%m%d-%H%M%S")
                 write_json_atomic(HISTORY_DIR / f"{hid}.json", payload)
                 index = [{"id": hid, "archivo": filename, "actualizado": payload["actualizado"],
-                          "meses": list(payload["meses"].keys())}] + read_json(HISTORY_INDEX, [])
+                          "meses": payload["mesesActualizados"]}] + read_json(HISTORY_INDEX, [])
                 for old in index[HISTORY_MAX:]:
                     (HISTORY_DIR / f"{old['id']}.json").unlink(missing_ok=True)
                 write_json_atomic(HISTORY_INDEX, index[:HISTORY_MAX])
-            print(f"Planilla '{filename}' procesada en {time.time() - t0:.1f}s: {list(payload['meses'])}", flush=True)
+            print(f"Planilla '{filename}' procesada en {time.time() - t0:.1f}s: actualizó {payload['mesesActualizados']}", flush=True)
             self._json(200, payload)
         except Exception as exc:  # error de formato de planilla
             print(f"Error procesando '{filename}': {exc}", flush=True)

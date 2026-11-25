@@ -1,4 +1,4 @@
-# Ventas · Centro de control (v2.0.0)
+# Ventas · Centro de control (v2.1.0)
 
 Tablero de ventas sin IVA con gráficos circulares de **Alcance ($)**, **Alcance Días**,
 **FCT (U)** y **Alcance (U)** por canal (Retail, Retiro, Bariloche, E-commerce, Mayorista).
@@ -14,6 +14,18 @@ computadora ve siempre la última versión, y se puede elegir el mes.
 | `Dockerfile`, `requirements.txt`, `docker-compose.yml` | Contenedor y stack para Portainer (puerto **8086**) |
 
 > ⚠️ Repositorio **Private**: no subas la planilla a GitHub (el `.gitignore` ya la excluye).
+
+## Novedades v2.1.0
+- **Las cargas se combinan por mes**: cada planilla reemplaza solo los meses que trae;
+  los demás quedan como estaban. Se puede subir una planilla con todo el año y después
+  otra solo con noviembre actualizado.
+- **Tiendas extra** (ej. POP UP en julio–septiembre) aparecen solas como pestaña y
+  se suman a RETAIL y TOTALES.
+- Debajo del título se ve de qué planilla y cuándo se cargó el mes que estás mirando.
+
+Para pasar de 2.0 a 2.1: reemplazá `index.html`, `server.py`, `ventas_processor.py`,
+`docker-compose.yml` y `README.md` en GitHub y hacé **Pull and redeploy**. Los datos ya
+cargados se conservan.
 
 ## Actualizar desde la v1 (la versión con nginx)
 1. En GitHub reemplazá `index.html`, `Dockerfile`, `docker-compose.yml`, `README.md`,
@@ -32,7 +44,9 @@ computadora ve siempre la última versión, y se puede elegir el mes.
 
 ## Uso
 - **Subir planilla**: la primera vez pide el código de carga (queda recordado en ese navegador).
-  Procesa todos los meses que tengan pestaña `DB <MES>` + `<MES>` (≈15 s con la planilla FY27).
+  Procesa todos los meses que tengan pestaña `DB <MES>` con datos + `<MES>` (≈15 s con la planilla FY27).
+  Un mes que viene en la planilla nueva **reemplaza** al guardado (gana la última carga);
+  no subas una planilla vieja después de una nueva.
 - **Mes**: selector arriba a la derecha (por defecto, el más reciente).
 - Alcance Días = días transcurridos / días del mes; en meses cerrados es 100%.
 - El sitio se refresca solo cada 5 minutos.
