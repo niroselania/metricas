@@ -1,4 +1,28 @@
-# Ventas · Centro de control (v2.2.0)
+# Ventas · Centro de control (v3.0.1)
+
+## Novedades v3.0.1
+- Paleta azul noche: mejor contraste en porcentajes, etiquetas de estado y textos sobre las tarjetas de vidrio.
+
+## Novedades v3.0.0
+- **Ingreso con usuario y contraseña** antes de ver cualquier dato (también protege `/api/data`).
+- Diseño nuevo **"liquid glass"**: tarjetas de vidrio esmerilado, barra lateral, botón naranja.
+- Usuarios **admin** (suben planillas) y de **consulta** (solo ven).
+
+### Usuarios (Portainer > Stacks > ventas-dashboard > Environment variables)
+| Variable | Ejemplo | Para qué |
+|---|---|---|
+| `DASH_USERS` | `ariel:MiClave2026:admin, comercial:OtraClave` | Lista de usuarios. `:admin` = puede subir planillas. Si nadie tiene `:admin`, todos pueden subir. |
+| `SESSION_HOURS` | `12` | Horas que dura la sesión (con "Recordarme": 30 días). |
+| `UPLOAD_TOKEN` | *(vacío)* | Opcional: código extra al subir. Con usuarios admin ya no hace falta. |
+
+- Separá usuarios con coma. La clave no puede tener comas; evitá `:` y `$`.
+- El usuario no distingue mayúsculas; la clave sí.
+- Para **agregar, sacar o cambiar la clave** de alguien: editá `DASH_USERS` y hacé *Update the stack*.
+  Las sesiones abiertas de ese usuario se cierran solas.
+- 5 claves erróneas seguidas bloquean esa IP 5 minutos.
+- Si lo publicás con HTTPS detrás de un proxy, agregá `COOKIE_SECURE=1` (y `TRUST_PROXY=1`).
+- `http://IP:8086/api/health` sigue respondiendo sin login, pero sin datos de ventas.
+
 
 Tablero de ventas sin IVA con gráficos circulares de **Alcance ($)**, **Alcance Días**,
 **FCT (U)** y **Alcance (U)** por canal (Retail, Retiro, Bariloche, E-commerce, Mayorista).
@@ -9,6 +33,8 @@ computadora ve siempre la última versión, y se puede elegir el mes.
 | Archivo | Qué hace |
 |---|---|
 | `index.html` | El tablero |
+| `auth.py` | Usuarios, contraseñas y sesiones |
+| `login.html` | Pantalla de ingreso |
 | `server.py` | Sirve el sitio, recibe la planilla y guarda los datos en `/data` |
 | `telegram_bot.py` | Bot de consultas y aviso de planilla nueva |
 | `ventas_processor.py` | Lee las pestañas `DB <MES>` (detalle) y `<MES>` (FCT) |
