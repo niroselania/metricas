@@ -1,7 +1,7 @@
 services:
   ventas-dashboard:
     build: .
-    image: ventas-dashboard:3.0.1
+    image: ventas-dashboard:3.1.0
     pull_policy: build        # en Portainer: reconstruye la imagen en cada redeploy
     container_name: ventas-dashboard
     restart: unless-stopped

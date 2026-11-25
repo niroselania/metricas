@@ -29,7 +29,7 @@ from auth import Auth
 
 TELEGRAM_BOT = None
 
-VERSION = "3.0.1"
+VERSION = "3.1.0"
 APP_DIR = Path(os.environ.get("APP_DIR", "/app"))
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
 HISTORY_DIR = DATA_DIR / "history"

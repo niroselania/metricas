@@ -1,4 +1,29 @@
-# Ventas · Centro de control (v3.0.1)
+# Ventas · Centro de control (v3.1.0)
+
+## Novedades v3.1.0
+Solo cambia `index.html` (más `server.py` y `docker-compose.yml` por el número de versión). El login, los
+usuarios, los canales extra y el bot de Telegram siguen igual.
+- **Proyección de cierre** por canal y total, con aviso de poca confiabilidad (ej. Mayorista: pocos pedidos grandes).
+- **Necesario por día hábil** para llegar al FCT, comparado con el ritmo actual.
+- **Alcance Días por días hábiles**: Mayorista de lunes a viernes; en los demás canales se descuentan los días de la
+  semana en que no vendió nunca en el mes (ej. domingos de Retiro). Las marcas de "esperado" de las donas y barras usan esto.
+- **Fecha de referencia = último día con ventas de la planilla** (no el reloj del navegador) y aviso si los datos
+  del mes tienen más de 36 horas.
+- **Comparativos a igual día** contra el mes anterior y el mismo mes del año anterior (salen solos si esos meses
+  están cargados), y variación en la tabla de canales.
+- **Alertas** arriba (necesita X veces el ritmo, proyecta bajo el FCT, sin ventas hace N días hábiles, ya alcanzó el FCT).
+- Mix de venta por canal, ticket y unidades por ticket **sin Mayorista** (Mayorista muestra pedidos y pedido promedio),
+  mejor y peor día, patrón por día de la semana.
+- Top líneas con % del total y variación de mix contra el mes anterior; FALLADO, Sin línea, CORPORATE y montos
+  negativos van aparte como "Ajustes y devoluciones". Botón "Ver todas".
+- Gráfico en dos paneles (acumulado con proyección arriba, venta diaria abajo) y barras por canal con marca de esperado
+  en lugar de las mini-donas.
+- Montos como "$ 1.042 M" (antes "MM"). Mejor lectura en celular (tabla con scroll, gráfico a ancho real),
+  tooltips con toque y teclado, foco visible.
+
+Para actualizar: reemplazá `index.html`, `server.py`, `docker-compose.yml` y `README.md` en GitHub y hacé **Pull and
+redeploy**. Los datos y usuarios se conservan.
+
 
 ## Novedades v3.0.1
 - Paleta azul noche: mejor contraste en porcentajes, etiquetas de estado y textos sobre las tarjetas de vidrio.
