@@ -36,7 +36,7 @@ select.btn option{background:var(--panel-solid);color:var(--ink)}
 .tab.on{color:var(--cyan);border-color:transparent;box-shadow:var(--glow);background:var(--cyan-soft)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px;backdrop-filter:blur(10px)}
 .ptitle{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 14px;display:flex;justify-content:space-between;gap:8px}
-.donuts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.donuts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
 .dcard{text-align:center;padding:22px 14px 18px}
 .dcard h3{margin:0 0 10px;font-size:15px;font-weight:600}
 .dcard svg{width:100%;max-width:210px;height:auto;display:block;margin:0 auto}
@@ -54,7 +54,7 @@ select.btn option{background:var(--panel-solid);color:var(--ink)}
 .kpi .v{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:6px;white-space:nowrap}
 .row{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
 .mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.mini .m{text-align:center;cursor:pointer;border-radius:12px;padding:8px 4px;border:1px solid transparent}
+.mini .m{text-align:center;cursor:pointer;border-radius:12px;padding:8px 4px;border:1px solid transparent;color:var(--ink);background:transparent;font:inherit;width:100%}
 .mini .m:hover{border-color:var(--line-2)}
 .mini svg{width:100%;max-width:120px}
 .mini .n{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em}
@@ -71,6 +71,18 @@ tr.tot td{font-weight:700;color:var(--cyan)}
 .tip{position:fixed;pointer-events:none;background:var(--panel-solid);border:1px solid var(--line-2);border-radius:10px;padding:8px 10px;font-size:12px;box-shadow:var(--shadow);display:none;z-index:9;font-family:var(--mono)}
 footer{color:var(--dim);font-size:12px;margin-top:22px;text-align:center}
 .msg{font-size:12px;color:var(--amber)}
+.summary{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:12px;margin:0 0 16px}
+.summary-main,.summary-item{padding:16px 18px}
+.summary-main{background:linear-gradient(135deg,var(--cyan-soft),var(--panel))}
+.summary-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+.summary-value{font-size:clamp(22px,2vw,30px);font-weight:750;letter-spacing:-.03em;margin-top:6px}
+.summary-note{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.4}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{min-width:600px}
+button:focus-visible,select:focus-visible,label.btn:focus-within{outline:3px solid var(--cyan);outline-offset:2px}
+@media (max-width:980px){.summary{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.summary{grid-template-columns:1fr 1fr}.summary-main{grid-column:1/-1}.panel{padding:15px}.actions{width:100%}.actions>*{flex:1}.pill{text-align:center}}
 @media (max-width:980px){.donuts{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:1fr}}
 @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.mini{grid-template-columns:repeat(2,1fr)}}
 @media print{.actions,.tabs{display:none}body{background:#fff}}
@@ -92,15 +104,16 @@ footer{color:var(--dim);font-size:12px;margin-top:22px;text-align:center}
  <div class="msg" id="msg"></div>
  <div class="sub" id="upd" style="margin:-8px 0 14px"></div>
  <nav class="tabs" id="tabs"></nav>
+ <section class="summary" id="summary" aria-label="Resumen del período"></section>
  <section class="donuts" id="donuts"></section>
  <section class="kpis" id="kpis"></section>
  <section class="row">
-  <div class="panel"><p class="ptitle"><span>Venta diaria ($) y acumulado vs FCT</span><span class="legend"><span style="--c:var(--cyan)">Venta del día</span><span style="--c:var(--violet)">Acumulado</span><span style="--c:var(--amber)">Ritmo FCT</span></span></p><div id="chart"></div></div>
+  <div class="panel"><p class="ptitle"><span>Venta diaria y acumulada vs FCT</span><span class="legend"><span style="--c:var(--cyan)">Venta diaria · eje izq.</span><span style="--c:var(--violet)">Acumulado · eje der.</span><span style="--c:var(--amber)">Ritmo calendario · eje der.</span></span></p><div id="chart" class="chart-wrap"></div></div>
   <div class="panel"><p class="ptitle"><span>Alcance ($) por canal</span><span>clic para ver</span></p><div class="mini" id="mini"></div></div>
  </section>
  <section class="row">
-  <div class="panel"><p class="ptitle"><span>Resumen por canal</span></p><div id="tbl"></div></div>
-  <div class="panel"><p class="ptitle"><span>Top líneas · <span id="lt"></span></span></p><div id="lineas"></div></div>
+  <div class="panel"><p class="ptitle"><span>Resumen por canal</span><span>Montos sin IVA</span></p><div id="tbl" class="table-wrap"></div></div>
+  <div class="panel"><p class="ptitle"><span>Líneas · <span id="lt"></span></span><button class="btn" id="toggleLines" type="button">Ver todas</button></p><div id="lineas"></div><div class="summary-note">Los valores negativos pueden corresponder a ajustes o devoluciones.</div></div>
  </section>
  <footer id="foot"></footer>
 </div>
@@ -112,6 +125,7 @@ const ORDER=["TOTAL","RETAIL","RETIRO","BARILOCHE","E-COMMERCE","MAYORISTA"];
 const GROUPS={TOTAL:["RETIRO","BARILOCHE","E-COMMERCE","MAYORISTA"],RETAIL:["RETIRO","BARILOCHE"]};
 const COLORS={RETIRO:"#22d3ee",BARILOCHE:"#a78bfa","E-COMMERCE":"#34d399",MAYORISTA:"#fbbf24"};
 let sel="TOTAL";
+let showAllLines=false;
 const $=id=>document.getElementById(id);
 const nf0=new Intl.NumberFormat("es-AR",{maximumFractionDigits:0});
 const money=v=>"$ "+nf0.format(v);
@@ -137,6 +151,13 @@ function agg(key){
 }
 function status(r,dias){return r>=dias?["ok","En ritmo"]:r>=dias-.1?["warn","Leve atraso"]:["bad","Bajo ritmo"]}
 function colorOf(r,dias){const s=status(r,dias)[0];return s==="ok"?"var(--green)":s==="warn"?"var(--amber)":"var(--red)"}
+function previousMonthComparison(a,D){
+ const y=DATA.month===1?DATA.year-1:DATA.year, m=DATA.month===1?12:DATA.month-1, key=`${y}-${String(m).padStart(2,"0")}`;
+ const prev=PAYLOAD.meses[key];if(!prev||D.day<1)return null;
+ const channels=GROUPS[sel]||[sel],days=Math.min(D.day,prev.days),current=a.diario.slice(0,days).reduce((s,v)=>s+v,0);
+ const prior=channels.reduce((sum,c)=>sum+(prev.canales[c]?.diario||[]).slice(0,days).reduce((s,r)=>s+(r[0]||0),0),0);
+ return {prior,days,change:prior?current/prior-1:null,month:prev.mes};
+}
 function arc(cx,cy,r,a0,a1){const p=a=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);
  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`}
 function ring(ratio,color,center,label,size=200,stroke=18,marker=null){
@@ -162,46 +183,49 @@ function render(){
  const D=alcanceDias(), a=agg(sel);
  $("sub").textContent=`${DATA.mes} · ${sel==="TOTAL"?"Todos los canales":sel}`;
  $("pace").textContent=`Día ${D.day} de ${DATA.days} · Alcance días ${pct(D.ratio)}`;
- $("tabs").innerHTML=ORDER.map(k=>`<button class="tab${k===sel?" on":""}" data-k="${k}" type="button">${k==="TOTAL"?"TOTALES":k}</button>`).join("");
+ $("tabs").innerHTML=ORDER.map(k=>`<button class="tab${k===sel?" on":""}" data-k="${k}" type="button" aria-pressed="${k===sel}">${k==="TOTAL"?"TOTALES":k}</button>`).join("");
  const s$=status(a.alc,D.ratio), sU=status(a.alcU,D.ratio);
+ const gap=Math.max(0,a.fct-a.venta),remaining=Math.max(0,DATA.days-D.day),needed=remaining?gap/remaining:0;
+ const comp=previousMonthComparison(a,D),compText=comp?(comp.change===null?"Sin base comparable":`${comp.change>=0?"+":""}${pct(comp.change)} vs. ${comp.month}`):"No hay mes anterior cargado";
+ $("summary").innerHTML=`<div class="panel summary-main"><div class="summary-label">Ventas acumuladas · ${esc(DATA.mes)}</div><div class="summary-value">${short(a.venta)}</div><div class="summary-note">${pct(a.alc)} del objetivo de ${short(a.fct)} · ${s$[1]}</div></div><div class="panel summary-item"><div class="summary-label">Brecha al objetivo</div><div class="summary-value">${short(gap)}</div><div class="summary-note">${gap?"Pendiente para alcanzar el FCT":"Objetivo alcanzado"}</div></div><div class="panel summary-item"><div class="summary-label">Ritmo diario requerido</div><div class="summary-value">${remaining?short(needed):"—"}</div><div class="summary-note">${remaining?`por día durante ${remaining} días calendario`:"Período cerrado"}</div></div><div class="panel summary-item"><div class="summary-label">Comparación al mismo día</div><div class="summary-value">${comp&&comp.change!==null?`${comp.change>=0?"+":""}${pct(comp.change)}`:"—"}</div><div class="summary-note">${comp?`${compText} · primeros ${comp.days} días`:compText}</div></div>`;
  const fctSegs=sel==="TOTAL"||sel==="RETAIL"
    ? a.list.map(c=>({n:c,v:DATA.canales[c].fctU,c:COLORS[c]}))
    : [{n:"Vendidas",v:Math.min(a.u,a.fctU),c:COLORS[sel]},{n:"Pendientes",v:Math.max(0,a.fctU-a.u),c:"var(--track)"}];
  $("donuts").innerHTML=`
  <div class="panel dcard"><h3>Alcance ($)</h3>${ring(a.alc,colorOf(a.alc,D.ratio),pct(a.alc),"de FCT ($)",200,18,D.ratio)}
   <div class="dfoot">Venta <b>${short(a.venta)}</b> · FCT <b>${short(a.fct)}</b></div><span class="badge ${s$[0]}">${s$[1]}</span></div>
- <div class="panel dcard"><h3>Alcance Días</h3>${ring(D.ratio,"var(--cyan)",pct(D.ratio),"del mes transcurrido")}
-  <div class="dfoot">Día <b>${D.day}</b> de <b>${DATA.days}</b> · faltan <b>${DATA.days-D.day}</b> días</div><span class="badge ok" style="color:var(--cyan);background:var(--cyan-soft)">Referencia de ritmo</span></div>
  <div class="panel dcard"><h3>FCT (U)</h3>${segRing(fctSegs,nf0.format(a.fctU),"unidades objetivo")}
   <div class="dfoot">${sel==="TOTAL"||sel==="RETAIL"?"Reparto por canal":"Vendidas vs pendientes"} · faltan <b>${nf0.format(Math.max(0,a.fctU-a.u))}</b> U</div>
   <div class="legend" style="justify-content:center;margin-top:8px">${fctSegs.filter(x=>x.n!=="Pendientes").map(x=>`<span style="--c:${x.c}">${esc(x.n)}</span>`).join("")}</div></div>
  <div class="panel dcard"><h3>Alcance (U)</h3>${ring(a.alcU,colorOf(a.alcU,D.ratio),pct(a.alcU),"de FCT (U)",200,18,D.ratio)}
   <div class="dfoot">Unidades <b>${nf0.format(a.u)}</b> · FCT <b>${nf0.format(a.fctU)}</b></div><span class="badge ${sU[0]}">${sU[1]}</span></div>`;
- const k=[["Monto de venta ($)",short(a.venta)],["Unidades",nf0.format(a.u)],["FCT ($)",short(a.fct)],["Tickets",nf0.format(a.tk)],
-  ["Precio promedio",a.u?money(a.venta/a.u):"–"],["Ticket promedio",a.tk&&sel!=="MAYORISTA"?money(a.venta/a.tk):"–"]];
+ const k=[["Monto de venta · sin IVA",short(a.venta)],["Unidades netas",nf0.format(a.u)],["Objetivo FCT · sin IVA",short(a.fct)],["Tickets",nf0.format(a.tk)],
+  ["Precio promedio por unidad",a.u?money(a.venta/a.u):"–"],["Venta promedio por ticket",a.tk&&sel!=="MAYORISTA"?money(a.venta/a.tk):"–"]];
  $("kpis").innerHTML=k.map(x=>`<div class="panel kpi"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join("");
- $("mini").innerHTML=["RETIRO","BARILOCHE","E-COMMERCE","MAYORISTA"].map(c=>{const x=agg(c);return `<div class="m" data-k="${c}">${ring(x.alc,COLORS[c],pct(x.alc),short(x.venta),120,11,D.ratio)}<div class="n">${c}</div></div>`}).join("");
+ $("mini").innerHTML=["RETIRO","BARILOCHE","E-COMMERCE","MAYORISTA"].map(c=>{const x=agg(c);return `<button class="m" type="button" data-k="${c}" aria-label="Ver canal ${c}">${ring(x.alc,COLORS[c],pct(x.alc),short(x.venta),120,11,D.ratio)}<div class="n">${c}</div></button>`}).join("");
  drawChart(a,D);
  const rows=["RETAIL","RETIRO","BARILOCHE","E-COMMERCE","MAYORISTA","TOTAL"].map(c=>{const x=agg(c);return `<tr class="${c==="TOTAL"?"tot":""}"><td>${c==="TOTAL"?"TOTALES":c}</td><td>${short(x.venta)}</td><td>${nf0.format(x.u)}</td><td>${short(x.fct)}</td><td>${pct(x.alc)}</td><td>${nf0.format(x.fctU)}</td><td>${pct(x.alcU)}</td></tr>`}).join("");
- $("tbl").innerHTML=`<table><thead><tr><th>Canal</th><th>Venta</th><th>U</th><th>FCT ($)</th><th>Alc. ($)</th><th>FCT (U)</th><th>Alc. (U)</th></tr></thead><tbody>${rows}</tbody></table>`;
+ $("tbl").innerHTML=`<table><thead><tr><th>Canal</th><th>Venta sin IVA</th><th>Unidades</th><th>Objetivo $</th><th>Avance $</th><th>Objetivo U</th><th>Avance U</th></tr></thead><tbody>${rows}</tbody></table>`;
  $("lt").textContent=sel==="TOTAL"?"todos":sel.toLowerCase();
- const top=a.lineas.slice(0,8), mx=top[0]?top[0][1]:1;
+ const top=showAllLines?a.lineas:a.lineas.slice(0,8),mx=Math.max(1,...top.map(l=>l[1]));
+ $("toggleLines").textContent=showAllLines?"Ver principales":`Ver todas (${a.lineas.length})`;
  $("lineas").innerHTML=top.map(l=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><span>${esc(l[0])}</span><span style="font-family:var(--mono);color:var(--muted)">${short(l[1])} · ${nf0.format(l[2])} U</span></div><div class="bar"><i style="width:${(l[1]/mx*100).toFixed(1)}%"></i></div></div>`).join("")||'<div class="sub">Sin datos</div>';
- $("foot").textContent=`Fuente: ${DATA.fuente} · Montos sin IVA · Alcance Días = días transcurridos / días del mes`;
+ $("foot").textContent=`Fuente: ${DATA.fuente} · Montos sin IVA · FCT = objetivo mensual · Comparación contra el mes anterior al mismo día calendario · Ritmo requerido distribuido en días calendario`;
 }
 function drawChart(a,D){
- const W=720,H=260,p={l:54,r:14,t:12,b:26},n=DATA.days,iw=W-p.l-p.r,ih=H-p.t-p.b,bw=iw/n;
- let cum=0;const cumA=a.diario.map(v=>cum+=v);const maxBar=Math.max(...a.diario,1);const maxCum=Math.max(a.fct,cum,1);
- const yb=v=>p.t+ih-(v/maxBar)*ih*0.55, yc=v=>p.t+ih-(v/maxCum)*ih;
- let g="";for(let i=0;i<=4;i++){const v=maxCum*i/4,y=yc(v);g+=`<line x1="${p.l}" x2="${W-p.r}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${p.l-6}" y="${y+4}" text-anchor="end" font-size="10" fill="var(--dim)">${short(v).replace("$ ","")}</text>`}
+ const W=720,H=260,p={l:58,r:62,t:20,b:28},n=DATA.days,iw=W-p.l-p.r,ih=H-p.t-p.b,bw=iw/n;
+ let cum=0;const cumA=a.diario.map(v=>cum+=v),maxBar=Math.max(...a.diario,1),maxCum=Math.max(a.fct,cum,1);
+ const yb=v=>p.t+ih-(v/maxBar)*ih,yc=v=>p.t+ih-(v/maxCum)*ih;
+ let g="";for(let i=0;i<=4;i++){const dv=maxBar*i/4,cv=maxCum*i/4,y=yc(cv);g+=`<line x1="${p.l}" x2="${W-p.r}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${p.l-7}" y="${y+4}" text-anchor="end" font-size="10" fill="var(--dim)">${short(dv).replace("$ ","")}</text><text x="${W-p.r+7}" y="${y+4}" text-anchor="start" font-size="10" fill="var(--dim)">${short(cv).replace("$ ","")}</text>`}
  let bars="";a.diario.forEach((v,i)=>{const x=p.l+i*bw+bw*.18,y=yb(v);bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.64).toFixed(1)}" height="${(p.t+ih-y).toFixed(1)}" rx="2" fill="var(--cyan)" opacity="${i<D.day?.85:.25}" data-tip="${i+1}/${DATA.month}: ${money(v)}"/>`;
   if((i+1)%5===0||i===0)bars+=`<text x="${p.l+i*bw+bw/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--dim)">${i+1}</text>`});
- const upto=Math.max(1,Math.min(n,D.day||n));
+ const upto=Math.max(0,Math.min(n,D.day));
  const line=cumA.slice(0,upto).map((v,i)=>`${i?"L":"M"}${(p.l+i*bw+bw/2).toFixed(1)} ${yc(v).toFixed(1)}`).join(" ");
  const pace=`M${p.l+bw/2} ${yc(a.fct/n)} L${(p.l+(n-1)*bw+bw/2).toFixed(1)} ${yc(a.fct)}`;
- $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}${bars}<path d="${pace}" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="6 5"/><path d="${line}" fill="none" stroke="var(--violet)" stroke-width="2.5"/></svg>`;
+ $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ventas diarias y acumuladas frente al objetivo"><text x="${p.l}" y="12" font-size="9" fill="var(--dim)">DIARIA</text><text x="${W-p.r}" y="12" text-anchor="end" font-size="9" fill="var(--dim)">ACUMULADA</text>${g}${bars}<path d="${pace}" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="6 5"/><path d="${line}" fill="none" stroke="var(--violet)" stroke-width="2.5"/></svg>`;
 }
 document.addEventListener("click",e=>{const t=e.target.closest("[data-k]");if(t){sel=t.dataset.k;render();}});
+$("toggleLines").addEventListener("click",()=>{showAllLines=!showAllLines;render()});
 const tip=$("tip");
 document.addEventListener("mousemove",e=>{const t=e.target.closest("[data-tip]");if(t){tip.textContent=t.dataset.tip;tip.style.display="block";tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY+12)+"px"}else tip.style.display="none"});
 function setTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"Tema claro":"Tema oscuro";try{localStorage.setItem("ventas-theme",t)}catch(e){}}
