@@ -1,0 +1,20 @@
+services:
+  ventas-dashboard:
+    build: .
+    image: ventas-dashboard:2.0.0
+    pull_policy: build        # en Portainer: reconstruye la imagen en cada redeploy
+    container_name: ventas-dashboard
+    restart: unless-stopped
+    ports:
+      - "8086:8000"           # 8085 ya lo usa el buscador de stock
+    volumes:
+      - ventas-data:/data     # acá queda guardada la última planilla procesada
+    environment:
+      HISTORY_MAX: "30"
+      TZ: America/Argentina/Buenos_Aires
+      # Código para poder subir planillas (Portainer > Stack > Environment variables).
+      # Si queda vacío, cualquiera que abra el sitio puede subir una planilla.
+      UPLOAD_TOKEN: ${UPLOAD_TOKEN:-}
+
+volumes:
+  ventas-data:
