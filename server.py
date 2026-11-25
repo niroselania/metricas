@@ -18,8 +18,11 @@ import threading
 import time
 
 from ventas_processor import build_payload
+from telegram_bot import start_bot
 
-VERSION = "2.1.0"
+TELEGRAM_BOT = None
+
+VERSION = "2.2.0"
 APP_DIR = Path(os.environ.get("APP_DIR", "/app"))
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
 HISTORY_DIR = DATA_DIR / "history"
@@ -87,8 +90,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/history":
             return self._json(200, read_json(HISTORY_INDEX, []))
         if path == "/api/health":
+            telegram = dict(TELEGRAM_BOT.status) if TELEGRAM_BOT else {"enabled": False, "reason": "TELEGRAM_BOT_TOKEN vacío o no llegó al contenedor"}
+            if TELEGRAM_BOT:
+                telegram["notifyChats"] = len(TELEGRAM_BOT.notify_targets())
             return self._json(200, {"ok": True, "version": VERSION, "hasData": DATA_FILE.exists(),
-                                    "uploadProtected": bool(UPLOAD_TOKEN)})
+                                    "uploadProtected": bool(UPLOAD_TOKEN), "telegram": telegram})
         self._json(404, {"error": "No encontrado"})
 
     def do_POST(self):
@@ -136,6 +142,8 @@ class Handler(BaseHTTPRequestHandler):
                     (HISTORY_DIR / f"{old['id']}.json").unlink(missing_ok=True)
                 write_json_atomic(HISTORY_INDEX, index[:HISTORY_MAX])
             print(f"Planilla '{filename}' procesada en {time.time() - t0:.1f}s: actualizó {payload['mesesActualizados']}", flush=True)
+            if TELEGRAM_BOT:
+                TELEGRAM_BOT.notify_update(payload)
             self._json(200, payload)
         except Exception as exc:  # error de formato de planilla
             print(f"Error procesando '{filename}': {exc}", flush=True)
@@ -145,7 +153,11 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    global TELEGRAM_BOT
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+    TELEGRAM_BOT = start_bot(DATA_FILE, DATA_DIR)
+    if TELEGRAM_BOT is None:
+        print("Bot de Telegram DESACTIVADO: falta TELEGRAM_BOT_TOKEN (Portainer > Stack > Environment variables).", flush=True)
     port = int(os.environ.get("PORT", "8000"))
     print(f"Tablero de ventas v{VERSION} en el puerto {port} (carga protegida: {bool(UPLOAD_TOKEN)})", flush=True)
     ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()

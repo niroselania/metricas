@@ -1,7 +1,7 @@
 services:
   ventas-dashboard:
     build: .
-    image: ventas-dashboard:2.1.0
+    image: ventas-dashboard:2.2.0
     pull_policy: build        # en Portainer: reconstruye la imagen en cada redeploy
     container_name: ventas-dashboard
     restart: unless-stopped
@@ -15,6 +15,11 @@ services:
       # Código para poder subir planillas (Portainer > Stack > Environment variables).
       # Si queda vacío, cualquiera que abra el sitio puede subir una planilla.
       UPLOAD_TOKEN: ${UPLOAD_TOKEN:-}
+      # Bot de Telegram (opcional). Usá un bot DISTINTO al del buscador de stock.
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_ALLOWED_CHATS: ${TELEGRAM_ALLOWED_CHATS:-}
+      # Quién recibe el aviso de planilla nueva (vacío = los TELEGRAM_ALLOWED_CHATS)
+      TELEGRAM_NOTIFY_CHATS: ${TELEGRAM_NOTIFY_CHATS:-}
 
 volumes:
   ventas-data:
